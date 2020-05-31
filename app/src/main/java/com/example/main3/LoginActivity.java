@@ -23,6 +23,14 @@ public class LoginActivity extends AppCompatActivity {
     private EditText et_id, et_pass;
     private Button btn_login, btn_register;
     private Context mContext;
+    private BackPressHandler backPressHandler = new BackPressHandler(this);
+
+
+    //뒤로 두번 누를시 앱 종료
+    @Override
+    public void onBackPressed() {
+        backPressHandler.onBackPressed("뒤로가기 버튼 한번 더 누르면 종료");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,10 +83,12 @@ public class LoginActivity extends AppCompatActivity {
                                 pref.put("User_pass", User_pass);
                                 pref.put("User_birth", User_birth);
                                 pref.put("User_sex", User_sex);
-                                pref.put("User_location", User_location); // 회원정보를 RbPreference.class에 넘김 로그인 유지 기능
-
-                                Toast.makeText(getApplicationContext(),"로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show();
+                                pref.put("User_location", User_location);
+                                pref.put("User_check", true);// 회원정보를 RbPreference.class에 넘김 로그인 유지 기능
+                                Toast.makeText(getApplicationContext(),User_id+"님 환영합니다.",Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
                             } else { // 로그인에 실패한 경우
                                 Toast.makeText(getApplicationContext(),"로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show();

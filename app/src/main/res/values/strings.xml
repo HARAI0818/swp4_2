@@ -17,11 +17,10 @@
     <string name="menu_JHI">J-HI</string>
     <string name="menu_이메일">이메일</string>
 
-    <string name="menu_로그인">로그인</string>
+    <string name="menu_로그인">로그아웃</string>
     <string name="menu_아이디">아이디</string>
     <string name="menu_회원가입">회원가입</string>
     <string name="menu_비밀번호">비밀번호</string>
-
 
 
     <string name="main_병원검색">병원검색</string>

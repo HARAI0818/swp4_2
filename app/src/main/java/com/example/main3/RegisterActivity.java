@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -273,10 +274,10 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    /*public void onBirthdayClicked (View v) {
-        android.support.v4.app.DialogFragment newFragment = new android.support.v4.app.DialogFragment();   //DatePickerFragment 객체 생성
+    public void onBirthdayClicked (View v) {
+       DialogFragment newFragment = new DatePickerFragment();   //DatePickerFragment 객체 생성
         newFragment.show(getSupportFragmentManager(), "datePicker");                //프래그먼트 매니저를 이용하여 프래그먼트 보여주기
-    }*/
+    }
 
     void checkRunTimePermission(){
 

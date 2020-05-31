@@ -17,6 +17,8 @@ public class RbPreference {
         mContext = (Context) c;
     }
 
+
+
     public void put(String key, String value) {
         SharedPreferences pref = mContext.getSharedPreferences(PREF_NAME, Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
@@ -55,6 +57,14 @@ public class RbPreference {
         SharedPreferences pref = mContext.getSharedPreferences(PREF_NAME, Activity.MODE_PRIVATE);
         try { return pref.getBoolean(key, dftValue); }
         catch (Exception e) { return dftValue; } }
+
+
+    public void delete(){
+        SharedPreferences pref = mContext.getSharedPreferences(PREF_NAME, Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.clear();
+        editor.commit();
+    }
 }
 
 

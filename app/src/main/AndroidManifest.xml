@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.main3">
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.CALL_PHONE" />
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:allowBackup="true"
@@ -13,49 +13,37 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-
-
-
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".SickActivity"></activity>
+        <activity android:name=".SickshActivity" />
         <activity android:name=".youtubeAct" />
         <activity android:name=".search_medAct" />
         <activity android:name=".newsAct" />
         <activity android:name=".coronaAct" />
-        <activity android:name=".WebViewActivity"/>
-
+        <activity android:name=".WebViewActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".LoginMainAct" />
-        <activity android:name=".LoginActivity"/>
-        <activity android:name=".LoginInfActivity"/>
-
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".LoginInfActivity" />
         <activity
             android:name=".Splash"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            android:screenOrientation="fullSensor">
+            android:screenOrientation="fullSensor"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".MainActivity"/>
-
-
+        <activity android:name=".MainActivity" />
         <activity android:name=".search_hAct" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCTcIwkTlO3Vj9nw3pLn31FKKDTfPbGvSA"></meta-data>
+            android:value="api값" />
 
-        <activity android:name=".LoadingActivity"/>
-
-
-
-
-
-
-
+        <activity android:name=".LoadingActivity" />
     </application>
 
 </manifest>
