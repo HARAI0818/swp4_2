@@ -1,14 +1,24 @@
 package com.example.main3;
 
+
+
+
 //package com.imaec.forblog;
 
-public class Data {
+
+public class NewsData {
 
     private String title;
     private String content;
-    private int resId;
+    private String resId;
 
-    public String getTitle() {
+    public NewsData(String my_title, String my_body, String my_imgUrl) {
+        this.title = my_title;
+        this.content = my_body;
+        this.resId = my_imgUrl;
+    }
+
+    public String getNewsTitle() {
         return title;
     }
 
@@ -16,7 +26,7 @@ public class Data {
         this.title = title;
     }
 
-    public String getContent() {
+    public String getNewsContent() {
         return content;
     }
 
@@ -24,11 +34,13 @@ public class Data {
         this.content = content;
     }
 
-    public int getResId() {
+    public String getNewsResId() {
         return resId;
     }
 
-    public void setResId(int resId) {
+    public void setResId(String resId) {
         this.resId = resId;
     }
+
+
 }

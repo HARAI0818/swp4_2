@@ -1,8 +1,6 @@
 package com.example.main3;
 
 
-import 	androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -10,21 +8,22 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-public class WebViewActivity extends AppCompatActivity {
+import androidx.appcompat.app.AppCompatActivity;
+
+public class Youtube_WebviewActivity extends AppCompatActivity {
 
     private WebView webView;
-    private String url = "https://www.youtube.com";
+    //private String url ="https://www.youtube.com/watch?v=wudOB4J7Oxs"; // getIntent().getStringExtra("youtube"); // "https://www.youtube.com/watch?v=wudOB4J7Oxs";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.webview);
+        setContentView(R.layout.youtube_webview);
 
-        Intent intent = getIntent();
-        //Intent.getStringExtra('url');
 
-        webView = findViewById(R.id.webView);
+        String url =  getIntent().getStringExtra("youtube_webview");
+        webView = findViewById(R.id.youtube_webView);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.loadUrl(url);
         webView.setWebChromeClient(new WebChromeClient());

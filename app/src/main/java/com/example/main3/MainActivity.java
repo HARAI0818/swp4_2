@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
         btn5.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), youtubeAct.class);
+                Intent intent = new Intent(getApplicationContext(), YoutubeAct.class);
                 startActivity(intent);
 
             }
@@ -278,9 +278,6 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
-
-
-
 
 
 }

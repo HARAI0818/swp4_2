@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.main3.WebViewActivity">
+    tools:context="com.example.main3.Youtube_WebviewActivity">
 
     <WebView
-        android:id="@+id/webView"
+        android:id="@+id/youtube_webView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

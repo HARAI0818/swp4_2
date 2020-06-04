@@ -1,16 +1,21 @@
 package com.example.main3;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -23,6 +28,15 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 
@@ -31,6 +45,16 @@ public class search_hAct extends FragmentActivity
         implements GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener,
         OnMapReadyCallback  {
+
+    private static final int MY_LOCATION_REQUEST_CODE = 1;
+    private static final int TAG_CODE_PERMISSION_LOCATION = 1;
+    public static Context context_main;
+    ArrayList<MemberDTO> members;
+    private Context mContext;
+    private AlertDialog dialog;
+    private long time = 0;
+    public String Review_hos = "";
+
 
     private GoogleMap mgoogleMap;
     private ClusterManager<MyItem> clusterManager;
@@ -49,7 +73,7 @@ public class search_hAct extends FragmentActivity
         mapFragment.getMapAsync(this);
 
 
-
+        context_main = this;
 
         clinics = (ArrayList<Clinic>)getIntent().getSerializableExtra("clinic");
         clinic_address = (ArrayList<Location>)getIntent().getSerializableExtra("clinic_addr");
@@ -69,9 +93,24 @@ public class search_hAct extends FragmentActivity
         mgoogleMap.setOnCameraIdleListener(clusterManager);
         mgoogleMap.setOnMarkerClickListener(clusterManager);
 
-        //mgoogleMap.setMyLocationEnabled(true);
+        mgoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
+        mgoogleMap.setMyLocationEnabled(true);
+
         mgoogleMap.setOnMyLocationButtonClickListener(this);
         mgoogleMap.setOnMyLocationClickListener(this);
+
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                            PackageManager.PERMISSION_GRANTED) {
+                googleMap.setMyLocationEnabled(true);
+                googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+            } else {
+                ActivityCompat.requestPermissions(this, new String[] {
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION },
+                        TAG_CODE_PERMISSION_LOCATION);
+            }
 
 
         mgoogleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
@@ -110,13 +149,13 @@ public class search_hAct extends FragmentActivity
                 } // marker title로 clinic을 검색하여 number 반환받아옴
                 final int marker_ID_number = Integer.parseInt(marker_number);
                 Log.d(TAG, "marker number = " + String.valueOf(marker_ID_number));
-                Log.d(TAG, "marker clinic name = " + clinics.get(marker_ID_number).getName());
+                Log.d(TAG, "marker clinic name = " + clinics.get(marker_ID_number -1).getName());
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("병원정보");
                 builder.setMessage(
                         "이름 : " + clinics.get(marker_ID_number - 1).getName() +
                                 "\n주소 : " + clinics.get(marker_ID_number - 1).getAddress() +
-                                "\n병원전화번호 : " + clinics.get(marker_ID_number - 1).getPhoneNumber() +
+                                "\n전화번호 : " + clinics.get(marker_ID_number - 1).getPhoneNumber() +
                                 "\n종류 : " + clinics.get(marker_ID_number - 1).getSample()
                 );
                 builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
@@ -125,17 +164,28 @@ public class search_hAct extends FragmentActivity
 
                     }
                 });
-                builder.setNegativeButton("상세한 정보", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton("리뷰보기", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                         startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+clinics.get(Integer.parseInt(String.valueOf(marker_ID_number))).getPhoneNumber())));
+                        Review_hos = clinics.get(marker_ID_number - 1).getName();
+                        new BackgroundTask().execute();
                     }
                 });
-
+                /*
+                builder.setNeutralButton("리뷰쓰기", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(search_hAct.this, ReviewActivity.class);
+                        final String Review_hos = clinics.get(marker_ID_number - 1).getName();
+                        intent.putExtra("Review_hos",Review_hos);
+                        startActivity(intent);
+                    }
+                });
+                */
                 builder.setNeutralButton("전화걸기", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+clinics.get(Integer.parseInt(String.valueOf(marker_ID_number))).getPhoneNumber())));
+                        startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+clinics.get(Integer.parseInt(String.valueOf(marker_ID_number-1))).getPhoneNumber())));
                     }
                 });
                 AlertDialog alertDialog = builder.create();
@@ -144,7 +194,18 @@ public class search_hAct extends FragmentActivity
             }
         });// 마커 클릭 시 Alert Dialog가 나오도록 설정
     }
-
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == MY_LOCATION_REQUEST_CODE) {
+            if (permissions.length == 1 &&
+                    permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                mgoogleMap.setMyLocationEnabled(true);
+            } else {
+                // Permission was denied. Display an error message.
+            }
+        }
+    }
 
     @Override
     public void onMyLocationClick(@NonNull Location location) {
@@ -158,6 +219,128 @@ public class search_hAct extends FragmentActivity
         // (the camera animates to the user's current position).
         return false;
     }
+
+    class BackgroundTask extends AsyncTask<Void, Void, String> {
+        String target;
+
+
+        String sendMsg;
+
+        @Override
+        protected void onPreExecute() {
+            target = "http://211.110.104.63/Reviewsh.php";
+        }
+
+
+        @Override
+        protected String doInBackground(Void... params) {
+
+            InputStream is = null;
+            InputStreamReader isr = null;
+            BufferedReader reader = null;
+            StringBuffer stringBuffer = new StringBuffer();
+
+            try {
+
+                URL url = new URL(target);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+
+
+                httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                httpURLConnection.setRequestMethod("POST");//데이터를 POST 방식으로 전송합니다.
+                OutputStreamWriter osw = new OutputStreamWriter(httpURLConnection.getOutputStream());
+                sendMsg = "Review_hos=" + Review_hos;
+                osw.write(sendMsg);
+                osw.flush();
+
+
+                httpURLConnection.setConnectTimeout(10000);
+
+                if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+
+                    is = httpURLConnection.getInputStream();
+                    reader = new BufferedReader(new InputStreamReader(is));
+
+                    while (true) {
+                        String stringLine = reader.readLine();
+                        if (stringLine == null) break;
+                        stringBuffer.append(stringLine + "\n");
+                    }
+
+                }
+
+                parsing(stringBuffer.toString());
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (reader != null) reader.close();
+                    if (isr != null) isr.close();
+                    if (is != null) is.close();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+            return null;
+        }
+
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+
+        @Override
+        protected void onPostExecute(String s) {
+
+            Intent intent = new Intent(search_hAct.this, ReviewshActivity.class);
+
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("members", members);
+            intent.putExtra("members", bundle);
+            startActivity(intent);
+
+        }
+
+    }
+
+
+    public void parsing(String data) {
+
+        members = new ArrayList<>();
+
+        try {
+            JSONObject jsonObject = new JSONObject(data);
+            JSONArray jsonArray = new JSONArray(jsonObject.getString("response"));
+
+            //arrayList 클리어
+            members.clear();
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+
+                MemberDTO member = new MemberDTO();
+
+                JSONObject jsonObject1 = (JSONObject) jsonArray.get(i);
+                member.setReview_num(jsonObject1.getString("Review_num"));
+                member.setReview_score(jsonObject1.getString("Review_score"));
+                member.setReview_time(jsonObject1.getString("Review_time"));
+                member.setReview_title(jsonObject1.getString("Review_title"));
+                member.setReview_contents(jsonObject1.getString("Review_contents"));
+                member.setReview_user(jsonObject1.getString("Review_user"));
+                member.setReview_hos(jsonObject1.getString("Review_hos"));
+                members.add(member);
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
 
 }
