@@ -52,7 +52,7 @@ public class ReviewActivity extends AppCompatActivity {
                 float rs = rb.getRating();
                 String Review_score = String.valueOf(rs);
                 Intent intent = getIntent(); /*데이터 수신*/
-                String Review_hos = intent.getExtras().getString("Review_hos");
+                final String Review_hos = intent.getExtras().getString("Review_hos");
 
                 long now = System.currentTimeMillis();
                 Date mDate = new Date(now);
@@ -71,6 +71,8 @@ public class ReviewActivity extends AppCompatActivity {
                             if (success) { // 리뷰등록 성공시
                                 Toast.makeText(getApplicationContext(),"리뷰 작성에 성공하였습니다.",Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(ReviewActivity.this, ReviewshActivity.class); //리뷰 쓰기를 어디로 옮길지 정하고 바꿀것
+                                intent.putExtra("Review_hos", Review_hos);
+                                intent.addFlags(intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(intent);
                             } else { // 리뷰등록 실패시
                                 Toast.makeText(getApplicationContext(),"리뷰 작성에 실패하였습니다.",Toast.LENGTH_SHORT).show();

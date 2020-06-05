@@ -85,7 +85,7 @@ public class search_hAct extends FragmentActivity
 
 
 
-        @Override
+    @Override
     public void onMapReady(GoogleMap googleMap) {
         mgoogleMap = googleMap;
         clusterManager = new ClusterManager<>(this, mgoogleMap);
@@ -99,18 +99,18 @@ public class search_hAct extends FragmentActivity
         mgoogleMap.setOnMyLocationButtonClickListener(this);
         mgoogleMap.setOnMyLocationClickListener(this);
 
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
-                    PackageManager.PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
-                            PackageManager.PERMISSION_GRANTED) {
-                googleMap.setMyLocationEnabled(true);
-                googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-            } else {
-                ActivityCompat.requestPermissions(this, new String[] {
-                                Manifest.permission.ACCESS_FINE_LOCATION,
-                                Manifest.permission.ACCESS_COARSE_LOCATION },
-                        TAG_CODE_PERMISSION_LOCATION);
-            }
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                        PackageManager.PERMISSION_GRANTED) {
+            googleMap.setMyLocationEnabled(true);
+            googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+        } else {
+            ActivityCompat.requestPermissions(this, new String[] {
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION },
+                    TAG_CODE_PERMISSION_LOCATION);
+        }
 
 
         mgoogleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
@@ -168,20 +168,12 @@ public class search_hAct extends FragmentActivity
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Review_hos = clinics.get(marker_ID_number - 1).getName();
-                        new BackgroundTask().execute();
-                    }
-                });
-                /*
-                builder.setNeutralButton("리뷰쓰기", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(search_hAct.this, ReviewActivity.class);
-                        final String Review_hos = clinics.get(marker_ID_number - 1).getName();
-                        intent.putExtra("Review_hos",Review_hos);
+                        Intent intent = new Intent(search_hAct.this, ReviewshActivity.class);
+                        intent.putExtra("Review_hos", Review_hos);
                         startActivity(intent);
                     }
                 });
-                */
+
                 builder.setNeutralButton("전화걸기", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -220,126 +212,6 @@ public class search_hAct extends FragmentActivity
         return false;
     }
 
-    class BackgroundTask extends AsyncTask<Void, Void, String> {
-        String target;
-
-
-        String sendMsg;
-
-        @Override
-        protected void onPreExecute() {
-            target = "http://211.110.104.63/Reviewsh.php";
-        }
-
-
-        @Override
-        protected String doInBackground(Void... params) {
-
-            InputStream is = null;
-            InputStreamReader isr = null;
-            BufferedReader reader = null;
-            StringBuffer stringBuffer = new StringBuffer();
-
-            try {
-
-                URL url = new URL(target);
-                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-
-
-                httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                httpURLConnection.setRequestMethod("POST");//데이터를 POST 방식으로 전송합니다.
-                OutputStreamWriter osw = new OutputStreamWriter(httpURLConnection.getOutputStream());
-                sendMsg = "Review_hos=" + Review_hos;
-                osw.write(sendMsg);
-                osw.flush();
-
-
-                httpURLConnection.setConnectTimeout(10000);
-
-                if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-
-                    is = httpURLConnection.getInputStream();
-                    reader = new BufferedReader(new InputStreamReader(is));
-
-                    while (true) {
-                        String stringLine = reader.readLine();
-                        if (stringLine == null) break;
-                        stringBuffer.append(stringLine + "\n");
-                    }
-
-                }
-
-                parsing(stringBuffer.toString());
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (reader != null) reader.close();
-                    if (isr != null) isr.close();
-                    if (is != null) is.close();
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }
-            return null;
-        }
-
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-        }
-
-
-        @Override
-        protected void onPostExecute(String s) {
-
-            Intent intent = new Intent(search_hAct.this, ReviewshActivity.class);
-
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("members", members);
-            intent.putExtra("members", bundle);
-            startActivity(intent);
-
-        }
-
-    }
-
-
-    public void parsing(String data) {
-
-        members = new ArrayList<>();
-
-        try {
-            JSONObject jsonObject = new JSONObject(data);
-            JSONArray jsonArray = new JSONArray(jsonObject.getString("response"));
-
-            //arrayList 클리어
-            members.clear();
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-
-                MemberDTO member = new MemberDTO();
-
-                JSONObject jsonObject1 = (JSONObject) jsonArray.get(i);
-                member.setReview_num(jsonObject1.getString("Review_num"));
-                member.setReview_score(jsonObject1.getString("Review_score"));
-                member.setReview_time(jsonObject1.getString("Review_time"));
-                member.setReview_title(jsonObject1.getString("Review_title"));
-                member.setReview_contents(jsonObject1.getString("Review_contents"));
-                member.setReview_user(jsonObject1.getString("Review_user"));
-                member.setReview_hos(jsonObject1.getString("Review_hos"));
-                members.add(member);
-            }
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
 
 
 
