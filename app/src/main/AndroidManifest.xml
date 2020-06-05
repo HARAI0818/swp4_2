@@ -49,7 +49,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCTcIwkTlO3Vj9nw3pLn31FKKDTfPbGvSA"></meta-data>
+            android:value="AIzaSyBU3XloHJvjAnFsikaWRS4sGaRX_kKvX88"></meta-data>
         <activity android:name=".LoadingActivity" />
     </application>
 

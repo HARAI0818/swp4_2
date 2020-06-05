@@ -5,10 +5,13 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ListView;
+
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,23 +26,23 @@ import java.util.ArrayList;
 
 public class ReviewshActivity extends AppCompatActivity {
 
-    ListView listView;
-    ArrayList<MemberDTO> members;
+    RecyclerView mRecyclerView = null;
+    ArrayList<MemberDTO> members = null;
     public String Review_hos = "";
+    private LinearLayoutManager mLinearLayoutManager = null;
+    Context mContext = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reviewsh);
 
-        listView = (ListView) findViewById(R.id.listView);
-
         Intent intent = getIntent(); /*데이터 수신*/
         Review_hos = intent.getExtras().getString("Review_hos");
         new BackgroundTask().execute();
 
-        Button write = (Button) findViewById(R.id.btn_write);
-        write.setOnClickListener(new View.OnClickListener(){
+        FloatingActionButton fab = findViewById(R.id.btn_write);
+        fab.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), ReviewActivity.class);
@@ -90,7 +93,6 @@ public class ReviewshActivity extends AppCompatActivity {
 
                     is = httpURLConnection.getInputStream();
                     reader = new BufferedReader(new InputStreamReader(is));
-
                     while (true) {
                         String stringLine = reader.readLine();
                         if (stringLine == null) break;
@@ -98,7 +100,6 @@ public class ReviewshActivity extends AppCompatActivity {
                     }
 
                 }
-
                 parsing(stringBuffer.toString());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -125,9 +126,12 @@ public class ReviewshActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
+            RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_main_list);
+            mLinearLayoutManager = new LinearLayoutManager(mContext);
+            mRecyclerView.setLayoutManager(mLinearLayoutManager);
             ArrayList<MemberDTO> membsers = members;
-            ReviewListAdapter adapter = new ReviewListAdapter(ReviewshActivity.this, membsers);
-            listView.setAdapter(adapter);
+            ReviewAdapter adapter = new ReviewAdapter(members);
+            mRecyclerView.setAdapter(adapter);
         }
 
     }
@@ -140,7 +144,6 @@ public class ReviewshActivity extends AppCompatActivity {
         try {
             JSONObject jsonObject = new JSONObject(data);
             JSONArray jsonArray = new JSONArray(jsonObject.getString("response"));
-
             //arrayList 클리어
             members.clear();
 
@@ -158,6 +161,7 @@ public class ReviewshActivity extends AppCompatActivity {
                 member.setReview_hos(jsonObject1.getString("Review_hos"));
                 members.add(member);
             }
+
 
 
         } catch (Exception e) {
