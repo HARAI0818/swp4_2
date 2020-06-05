@@ -34,7 +34,7 @@ public class NewsRecyclerAdapter extends RecyclerView.Adapter<NewsRecyclerAdapte
     }
 
 
-
+//
 
     @NonNull
     @Override
