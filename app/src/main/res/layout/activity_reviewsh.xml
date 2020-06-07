@@ -14,8 +14,7 @@
         android:background="#F0F0F0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:scrollbarFadeDuration="0"
-        android:scrollbarSize="5dp"/>
+        />
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

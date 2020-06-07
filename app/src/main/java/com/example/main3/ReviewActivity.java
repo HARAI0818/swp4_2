@@ -1,5 +1,6 @@
 package com.example.main3;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,6 +28,8 @@ public class ReviewActivity extends AppCompatActivity {
     private Button btn_review;
     private Context mContext ;
     private String Review_hos;
+    private AlertDialog dialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) { // 액티비티 시작시 처음으로 실행되는 생명주기!
@@ -61,6 +64,17 @@ public class ReviewActivity extends AppCompatActivity {
                 RbPreference pref = new RbPreference(mContext);
                 String Review_user = pref.getValue("User_id", "");
                 String Review_time  = simpleDate.format(mDate);
+
+                if(Review_title.equals("")||Review_contents.equals("")){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ReviewActivity.this);
+                    dialog = builder.setMessage("비어있는 정보가 있습니다. \n전부 입력해주세요.")
+                            .setNegativeButton("OK", null)
+                            .create();
+                    dialog.show();
+                    return;
+                }
+
+
 
                 Response.Listener<String> responseListener = new Response.Listener<String>() {
                     @Override

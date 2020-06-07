@@ -1,19 +1,25 @@
 package com.example.main3;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -31,6 +37,8 @@ public class ReviewshActivity extends AppCompatActivity {
     public String Review_hos = "";
     private LinearLayoutManager mLinearLayoutManager = null;
     Context mContext = this;
+    String User_id ="";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +47,35 @@ public class ReviewshActivity extends AppCompatActivity {
 
         Intent intent = getIntent(); /*데이터 수신*/
         Review_hos = intent.getExtras().getString("Review_hos");
-        new BackgroundTask().execute();
+
+        RbPreference pref = new RbPreference(mContext);
+        User_id = pref.getValue("User_id", "");
+
+
+
+        Response.Listener<String> responseListener = new Response.Listener<String>(){
+
+            @Override
+            public void onResponse(String response) {
+
+                String result = null;
+                try{
+                    JSONObject jsonResponse = new JSONObject(response);
+                    result = jsonResponse.getString("response");
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
+                parsingJSONData(result);
+            }
+        };//Response.Listener 완료
+
+        //Volley 라이브러리를 이용해서 실제 서버와 통신을 구현하는 부분
+        ReviewshRequest reviewshrequest = new ReviewshRequest(Review_hos, responseListener);
+        RequestQueue queue = Volley.newRequestQueue(ReviewshActivity.this);
+        queue.add(reviewshrequest);
+
+
 
         FloatingActionButton fab = findViewById(R.id.btn_write);
         fab.setOnClickListener(new View.OnClickListener(){
@@ -54,120 +90,32 @@ public class ReviewshActivity extends AppCompatActivity {
 
     }
 
-    class BackgroundTask extends AsyncTask<Void, Void, String> {
-        String target;
-        String sendMsg;
-
-
-        @Override
-        protected void onPreExecute() {
-            target = "http://211.110.104.63/Reviewsh.php";
-        }
-
-
-        @Override
-        protected String doInBackground(Void... params) {
-
-            InputStream is = null;
-            InputStreamReader isr = null;
-            BufferedReader reader = null;
-            StringBuffer stringBuffer = new StringBuffer();
-
-            try {
-
-                URL url = new URL(target);
-                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-
-
-                httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                httpURLConnection.setRequestMethod("POST");//데이터를 POST 방식으로 전송합니다.
-                OutputStreamWriter osw = new OutputStreamWriter(httpURLConnection.getOutputStream());
-                sendMsg = "Review_hos=" + Review_hos;
-                osw.write(sendMsg);
-                osw.flush();
-
-
-                httpURLConnection.setConnectTimeout(10000);
-
-                if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-
-                    is = httpURLConnection.getInputStream();
-                    reader = new BufferedReader(new InputStreamReader(is));
-                    while (true) {
-                        String stringLine = reader.readLine();
-                        if (stringLine == null) break;
-                        stringBuffer.append(stringLine + "\n");
-                    }
-
-                }
-                parsing(stringBuffer.toString());
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (reader != null) reader.close();
-                    if (isr != null) isr.close();
-                    if (is != null) is.close();
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }
-            return null;
-        }
-
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-        }
-
-
-        @Override
-        protected void onPostExecute(String s) {
-            RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_main_list);
-            mLinearLayoutManager = new LinearLayoutManager(mContext);
-            mRecyclerView.setLayoutManager(mLinearLayoutManager);
-            ArrayList<MemberDTO> membsers = members;
-            ReviewAdapter adapter = new ReviewAdapter(members);
-            mRecyclerView.setAdapter(adapter);
-        }
-
-    }
-
-
-    public void parsing(String data) {
+    private void parsingJSONData(String data) {
 
         members = new ArrayList<>();
-
         try {
-            JSONObject jsonObject = new JSONObject(data);
-            JSONArray jsonArray = new JSONArray(jsonObject.getString("response"));
-            //arrayList 클리어
-            members.clear();
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-
+            JSONArray jArray = new JSONArray(data);
+            for(int i = 0; i < jArray.length(); i++) {
                 MemberDTO member = new MemberDTO();
-
-                JSONObject jsonObject1 = (JSONObject) jsonArray.get(i);
-                member.setReview_num(jsonObject1.getString("Review_num"));
+                JSONObject jsonObject1 = (JSONObject) jArray.get(i);
                 member.setReview_score(jsonObject1.getString("Review_score"));
                 member.setReview_time(jsonObject1.getString("Review_time"));
                 member.setReview_title(jsonObject1.getString("Review_title"));
                 member.setReview_contents(jsonObject1.getString("Review_contents"));
                 member.setReview_user(jsonObject1.getString("Review_user"));
-                member.setReview_hos(jsonObject1.getString("Review_hos"));
                 members.add(member);
             }
+            RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_main_list);
+            mLinearLayoutManager = new LinearLayoutManager(mContext);
+            mRecyclerView.setLayoutManager(mLinearLayoutManager);
+            ReviewAdapter adapter = new ReviewAdapter(members , User_id , this);
+            mRecyclerView.setAdapter(adapter);
 
-
-
-        } catch (Exception e) {
+        } catch(JSONException e) {
             e.printStackTrace();
         }
 
     }
+
 
 }
