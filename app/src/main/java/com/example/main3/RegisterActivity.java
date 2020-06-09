@@ -145,8 +145,6 @@ public class RegisterActivity extends AppCompatActivity {
 
                 String address = getCurrentAddress(latitude, longitude);
                 et_location.setText(address);
-
-                Toast.makeText(RegisterActivity.this, "현재위치 \n위도 " + latitude + "\n경도 " + longitude, Toast.LENGTH_LONG).show();
             }
         });
 

@@ -3,6 +3,14 @@ package com.example.main3;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
+import android.preference.PreferenceManager;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 //로그인 유지 기능을 위한 클래스
 public class RbPreference {
@@ -41,6 +49,9 @@ public class RbPreference {
         editor.commit();
     }
 
+
+
+
     public String getValue(String key, String dftValue) {
         SharedPreferences pref = mContext.getSharedPreferences(PREF_NAME, Activity.MODE_PRIVATE);
         try { return pref.getString(key, dftValue); }
@@ -65,6 +76,14 @@ public class RbPreference {
         editor.clear();
         editor.commit();
     }
+
+
+
+
+
+
+
+
 }
 
 

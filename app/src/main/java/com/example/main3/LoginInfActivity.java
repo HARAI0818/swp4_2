@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 //로그인 정보 보여주는 액티비티
 public class LoginInfActivity extends AppCompatActivity {
 
-    private TextView tv_id, tv_pass,tv_birth, tv_location, tv_sex, tv_sick ;
+    private TextView tv_id, tv_pass,tv_birth, tv_location, tv_sex ;
     private Context mContext;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +26,6 @@ public class LoginInfActivity extends AppCompatActivity {
         tv_birth = (TextView) findViewById(R.id.tv_birth);
         tv_location = (TextView) findViewById(R.id.tv_location);
         tv_sex = (TextView) findViewById(R.id.tv_sex);
-        tv_sick = (TextView) findViewById(R.id.tv_sick);
 
         RbPreference pref = new RbPreference(mContext);
         String User_id = pref.getValue("User_id", "");
@@ -40,7 +39,6 @@ public class LoginInfActivity extends AppCompatActivity {
         tv_id.setText(User_id);
         tv_pass.setText(User_pass);
         tv_birth.setText(User_birth);
-        tv_sick.setText(User_sick);
         tv_location.setText(User_location);
         tv_sex.setText(User_sex);
     }
