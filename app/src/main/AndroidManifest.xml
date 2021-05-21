@@ -15,12 +15,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".search_mediAct"></activity>
 
         <uses-library
             android:name="org.apache.http.legacy"
-            android:required="false"/>
+            android:required="false" />
 
-        <activity android:name=".SickActivity"></activity>
+        <activity android:name=".SickActivity" />
         <activity android:name=".SickshActivity" />
         <activity android:name=".search_medAct" />
         <activity android:name=".newsAct" />
@@ -28,12 +29,10 @@
         <activity android:name=".coronaAct" />
         <activity android:name=".Youtube_WebviewActivity" />
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".LoginMainAct" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".LoginInfActivity" />
         <activity android:name=".ReviewshActivity" />
         <activity android:name=".ReviewActivity" />
-
         <activity
             android:name=".Splash"
             android:screenOrientation="fullSensor"
@@ -49,8 +48,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCTcIwkTlO3Vj9nw3pLn31FKKDTfPbGvSA"></meta-data>
-        <activity android:name=".LoadingActivity" />
+            android:value="AIzaSyBU3XloHJvjAnFsikaWRS4sGaRX_kKvX88" />
     </application>
 
 </manifest>

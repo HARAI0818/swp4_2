@@ -1,5 +1,6 @@
 package com.example.main3;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,6 +28,8 @@ public class ReviewActivity extends AppCompatActivity {
     private Button btn_review;
     private Context mContext ;
     private String Review_hos;
+    private AlertDialog dialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) { // 액티비티 시작시 처음으로 실행되는 생명주기!
@@ -52,7 +55,7 @@ public class ReviewActivity extends AppCompatActivity {
                 float rs = rb.getRating();
                 String Review_score = String.valueOf(rs);
                 Intent intent = getIntent(); /*데이터 수신*/
-                String Review_hos = intent.getExtras().getString("Review_hos");
+                final String Review_hos = intent.getExtras().getString("Review_hos");
 
                 long now = System.currentTimeMillis();
                 Date mDate = new Date(now);
@@ -61,6 +64,17 @@ public class ReviewActivity extends AppCompatActivity {
                 RbPreference pref = new RbPreference(mContext);
                 String Review_user = pref.getValue("User_id", "");
                 String Review_time  = simpleDate.format(mDate);
+
+                if(Review_title.equals("")||Review_contents.equals("")){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ReviewActivity.this);
+                    dialog = builder.setMessage("비어있는 정보가 있습니다. \n전부 입력해주세요.")
+                            .setNegativeButton("OK", null)
+                            .create();
+                    dialog.show();
+                    return;
+                }
+
+
 
                 Response.Listener<String> responseListener = new Response.Listener<String>() {
                     @Override
@@ -71,6 +85,8 @@ public class ReviewActivity extends AppCompatActivity {
                             if (success) { // 리뷰등록 성공시
                                 Toast.makeText(getApplicationContext(),"리뷰 작성에 성공하였습니다.",Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(ReviewActivity.this, ReviewshActivity.class); //리뷰 쓰기를 어디로 옮길지 정하고 바꿀것
+                                intent.putExtra("Review_hos", Review_hos);
+                                intent.addFlags(intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(intent);
                             } else { // 리뷰등록 실패시
                                 Toast.makeText(getApplicationContext(),"리뷰 작성에 실패하였습니다.",Toast.LENGTH_SHORT).show();

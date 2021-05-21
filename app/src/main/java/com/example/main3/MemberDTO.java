@@ -7,30 +7,22 @@ public class MemberDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String Review_num , Review_score, Review_time, Review_title, Review_contents,Review_user ,Review_hos;
+    private String  Review_score, Review_time, Review_title, Review_contents,Review_user;
 
 
 
     public MemberDTO() {
     }
 
-    public MemberDTO(String Review_num, String Review_score, String Review_time, String Review_title, String Review_contents, String Review_user , String Review_hos) {
-        this.Review_num = Review_num;
+    public MemberDTO( String Review_score, String Review_time, String Review_title, String Review_contents, String Review_user) {
         this.Review_score = Review_score;
         this.Review_time = Review_time;
         this.Review_title = Review_title;
         this.Review_contents = Review_contents;
         this.Review_user = Review_user;
-        this.Review_hos = Review_hos;
     }
 
-    public String getReview_num() {
-        return Review_num;
-    }
 
-    public void setReview_num(String Review_num) {
-        this.Review_num = Review_num;
-    }
 
     public float getReview_score() {
         return Float.parseFloat(Review_score);
@@ -68,22 +60,16 @@ public class MemberDTO implements Serializable {
 
     public void setReview_user(String Review_user) { this.Review_user = Review_user; }
 
-    public String getReview_hos() {
-        return Review_hos;
-    }
 
-    public void setReview_hos(String Review_hos) { this.Review_hos = Review_hos; }
 
     @Override
     public String toString() {
         return "MemberDTO{" +
-                "Review_num='" + Review_num + '\'' +
                 ", Review_score='" + Review_score + '\'' +
                 ", Review_time='" + Review_time + '\'' +
                 ", Review_title='" + Review_title + '\'' +
                 ", Review_contents=" + Review_contents +
                 ", Review_user=" + Review_user +
-                ", Review_hos=" + Review_hos +
                 '}';
     }
 }
